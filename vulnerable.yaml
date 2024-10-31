@@ -1,0 +1,177 @@
+vulnerable_services:
+  - service: "AWS S3"
+    cname_patterns:
+      - "s3.amazonaws.com"
+      - "amazonaws.com"
+    response_messages:
+      - "NoSuchBucket"
+      - "The specified bucket does not exist"
+
+  - service: "GitHub Pages"
+    cname_patterns:
+      - "github.io"
+    response_messages:
+      - "There isn't a GitHub Pages site here."
+
+  - service: "Heroku"
+    cname_patterns:
+      - "herokudns.com"
+      - "herokussl.com"
+      - "herokuapp.com"
+    response_messages:
+      - "No such app"
+      - "no-such-app"
+
+  - service: "Shopify"
+    cname_patterns:
+      - "myshopify.com"
+    response_messages:
+      - "Sorry, this shop is currently unavailable."
+
+  - service: "Tumblr"
+    cname_patterns:
+      - "domains.tumblr.com"
+    response_messages:
+      - "There's nothing here."
+
+  - service: "Azure"
+    cname_patterns:
+      - "azurewebsites.net"
+      - "cloudapp.net"
+    response_messages:
+      - "Error 404 - Web app not found."
+
+  - service: "Bitbucket"
+    cname_patterns:
+      - "bitbucket.io"
+    response_messages:
+      - "Repository not found"
+
+  - service: "Fastly"
+    cname_patterns:
+      - "fastly.net"
+      - "fastlylb.net"
+    response_messages:
+      - "Fastly error: unknown domain"
+      - "Fastly error: unknown app"
+
+  - service: "Ghost"
+    cname_patterns:
+      - "ghost.io"
+    response_messages:
+      - "The thing you were looking for is no longer here"
+
+  - service: "Pantheon"
+    cname_patterns:
+      - "pantheon.io"
+    response_messages:
+      - "The gods are wise, but do not know of the site which you seek"
+
+  - service: "Surge.sh"
+    cname_patterns:
+      - "surge.sh"
+    response_messages:
+      - "project not found"
+
+  - service: "Zendesk"
+    cname_patterns:
+      - "zendesk.com"
+    response_messages:
+      - "Help Center Closed"
+
+  - service: "Amazon CloudFront"
+    cname_patterns:
+      - "cloudfront.net"
+    response_messages:
+      - "Bad request"
+      - "ERROR: The request could not be satisfied"
+
+  - service: "Squarespace"
+    cname_patterns:
+      - "squarespace.com"
+    response_messages:
+      - "No Such Account"
+
+  - service: "Unbounce"
+    cname_patterns:
+      - "unbouncepages.com"
+    response_messages:
+      - "The requested URL was not found on this server"
+
+  - service: "WordPress.com"
+    cname_patterns:
+      - "wordpress.com"
+    response_messages:
+      - "Do you want to register"
+
+  - service: "Intercom"
+    cname_patterns:
+      - "custom.intercom.help"
+    response_messages:
+      - "This page is reserved for a Intercom customer"
+
+  - service: "Desk.com"
+    cname_patterns:
+      - "desk.com"
+    response_messages:
+      - "Please try again or try Desk.com free for 14 days."
+
+  - service: "Cargo Collective"
+    cname_patterns:
+      - "cargocollective.com"
+    response_messages:
+      - "404 Not Found"
+
+  - service: "Statuspage"
+    cname_patterns:
+      - "statuspage.io"
+    response_messages:
+      - "Status page configured incorrectly"
+
+  - service: "SmartJobBoard"
+    cname_patterns:
+      - "smartjobboard.com"
+    response_messages:
+      - "This job board website is either expired or its domain name is invalid"
+
+  - service: "Help Scout"
+    cname_patterns:
+      - "helpscoutdocs.com"
+    response_messages:
+      - "No settings were found for this company:"
+
+  - service: "Tictail"
+    cname_patterns:
+      - "tictail.com"
+    response_messages:
+      - "Starting your own Tictail store is easy"
+
+  - service: "Campaign Monitor"
+    cname_patterns:
+      - "createsend.com"
+    response_messages:
+      - "Trying to access your account?"
+
+  - service: "Acquia"
+    cname_patterns:
+      - "acquia-test.co"
+    response_messages:
+      - "Web Site Not Found"
+
+  - service: "Proposify"
+    cname_patterns:
+      - "proposify.biz"
+    response_messages:
+      - "If you need immediate assistance, please contact Proposify Support"
+
+  - service: "Amazon Elastic Beanstalk"
+    cname_patterns:
+      - "elasticbeanstalk.com"
+    response_messages:
+      - "404 Not Found"
+
+  - service: "Readme.io"
+    cname_patterns:
+      - "readme.io"
+    response_messages:
+      - "Project doesnt exist... yet!"
