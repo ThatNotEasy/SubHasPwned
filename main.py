@@ -2,12 +2,12 @@ import os
 import logging
 import coloredlogs
 import dns.resolver
-import requests
-import yaml
+import requests, random
+import yaml, argparse
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from colorama import Fore
+from colorama import Fore, Style
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,9 +20,6 @@ def print_colored_banner(banner):
     for line in banner.strip().split('\n'):
         color = random.choice([Fore.RED, Fore.GREEN, Fore.YELLOW, Fore.BLUE, Fore.MAGENTA, Fore.CYAN, Fore.WHITE])
         print(color + line + Style.RESET_ALL)
-
-with open('vulnerable.yaml', 'r') as f:
-    vulnerable_services = yaml.safe_load(f)
 
 def get_page_title(content):
     try:
@@ -38,19 +35,25 @@ def get_page_title(content):
 
 def get_cname(subdomain):
     try:
-        logger.info(f"Resolving CNAME for {subdomain}")
+        logger.info(f"{Fore.YELLOW}[SubHasPwned]: {Fore.WHITE}Resolving CNAME for: {Fore.GREEN}{subdomain}{Fore.RESET}")
         parsed_url = urlparse(subdomain)
         domain = parsed_url.netloc or parsed_url.path
-        answers = dns.resolver.query(domain, 'CNAME')
+
+        # Use dns.resolver.resolve() instead of dns.resolver.query()
+        answers = dns.resolver.resolve(domain, 'CNAME')
         cname = [rdata.target.to_text().rstrip('.') for rdata in answers]
-        logger.info(f"Resolved CNAME for {domain}: {cname}")
-        try:
-            ip_answers = dns.resolver.query(cname[0], 'A')
-            ips = [ip.address for ip in ip_answers]
-            logger.info(f"CNAME {cname[0]} resolves to IP(s): {', '.join(ips)}")
-        except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
-            logger.warning(f"No A records found for CNAME {cname[0]}")
+
+        logger.info(f"{Fore.YELLOW}[SubHasPwned]: {Fore.WHITE}Resolved CNAME for: {Fore.GREEN}{domain}: {Fore.WHITE}{cname}{Fore.RESET}")
+
+        if cname:  # Check if CNAME is found before proceeding to A records
+            try:
+                ip_answers = dns.resolver.resolve(cname[0], 'A')
+                ips = [ip.address for ip in ip_answers]
+                logger.info(f"{Fore.YELLOW}[SubHasPwned]: {Fore.WHITE}CNAME {Fore.GREEN}{cname[0]} resolves to IP(s): {Fore.RED}{', '.join(ips)}{Fore.RESET}")
+            except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+                logger.warning(f"{Fore.YELLOW}[SubHasPwned]: {Fore.WHITE}No A records found for CNAME: {Fore.RED}{cname[0]}{Fore.RESET}")
         return cname
+
     except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.exception.Timeout) as e:
         logger.error(f"DNS resolution failed for {subdomain}: {e}")
         return []
@@ -142,11 +145,15 @@ if __name__ == "__main__":
 ╚════██║██║   ██║██╔══██╗██╔══██║██╔══██║╚════██║██╔═══╝ ██║███╗██║██║╚██╗██║██╔══╝  ██║  ██║    
 ███████║╚██████╔╝██████╔╝██║  ██║██║  ██║███████║██║     ╚███╔███╔╝██║ ╚████║███████╗██████╔╝    
 ╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝      ╚══╝╚══╝ ╚═╝  ╚═══╝╚══════╝╚═════╝     
-"""
+    """
+    print_colored_banner(banner)
     parser = argparse.ArgumentParser(description="Subdomain Takeover Checker")
     parser.add_argument("-f", "--file", help="Path to the file containing subdomains", required=True)
     parser.add_argument("-t", "--threads", help="Number of threads to use", type=int, default=5)
     args = parser.parse_args()
+    
+    with open('vulnerable.yaml', 'r') as f:
+        vulnerable_services = yaml.safe_load(f)
 
     output_file = "takeover.txt"
     requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
