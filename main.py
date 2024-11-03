@@ -67,18 +67,21 @@ def check_subdomain_takeover(subdomain, output_file):
         for cname in cname_records:
             is_potentially_vulnerable = False
             for service in vulnerable_services:
-                for pattern in service["cname_patterns"]:
-                    if pattern in cname:
-                        is_potentially_vulnerable = True
-                        result = f"[+] {subdomain} has CNAME {cname} matching {pattern}"
-                        logger.info(result)
-                        check_service_takeover(subdomain, cname, service, output_file)
-                        break
-                if is_potentially_vulnerable:
-                    break
-            if not is_potentially_vulnerable:
-                result = f"[-] {subdomain} has CNAME {cname} but no matching vulnerable service"
-                logger.warning(result)
+                if isinstance(service, dict) and "cname_patterns" in service:
+                    for pattern in service["cname_patterns"]:
+                        if pattern in cname:
+                            is_potentially_vulnerable = True
+                            result = f"[+] {subdomain} has CNAME {cname} matching {pattern}"
+                            logger.info(result)
+                            check_service_takeover(subdomain, cname, service, output_file)
+                            break
+                else:
+                    logger.error(f"Expected dict for service but got: {service}")
+            if is_potentially_vulnerable:
+                break
+        if not is_potentially_vulnerable:
+            result = f"[-] {subdomain} has CNAME {cname} but no matching vulnerable service"
+            logger.warning(result)
     else:
         result = f"[-] {subdomain} has no CNAME record"
         logger.warning(result)
@@ -95,7 +98,7 @@ def check_service_takeover(subdomain, cname, service, output_file):
             for error_msg in service["response_messages"]:
                 if error_msg.lower() in response_text.lower():
                     result = f"[+] {subdomain} [{status_code}] [{title}] [Vulnerable to {service['service']}]"
-                    logger.success(result)
+                    logger.info(result)  # Change this to logger.info
                     with open(output_file, 'a') as f:
                         f.write(f"{subdomain} [Vulnerable to {service['service']}]\n")
                     return
@@ -153,7 +156,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     with open('vulnerable.yaml', 'r') as f:
-        vulnerable_services = yaml.safe_load(f)
+        data = yaml.safe_load(f)
+        vulnerable_services = data['vulnerable_services']
 
     output_file = "takeover.txt"
     requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
